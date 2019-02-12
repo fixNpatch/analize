@@ -1,20 +1,22 @@
 package providers
 
 import (
+	"fmt"
 	"github.com/zserge/webview"
+	"io/ioutil"
 	"log"
 	"strconv"
 	"strings"
 )
 
-type WindowModel struct {}
+type WindowModel struct{}
 
 func NewWindowModel() *WindowModel {
 	return &WindowModel{}
 }
 
-func (m *WindowModel) IndexHTML() string  {
-	return 	`
+func (m *WindowModel) IndexHTML() string {
+	return `
 <!doctype html>
 <html>
 	<head>
@@ -23,18 +25,59 @@ func (m *WindowModel) IndexHTML() string  {
     	<script src="http://cdn.webix.com/edge/webix.js" type="text/javascript"></script>  
 	</head>
 	<body>
-		<button onclick="external.invoke('open')">Open</button>
-		<button onclick="external.invoke('save')">Save</button>
-		<button onclick="external.invoke('changeTitle:'+document.getElementById('new-title').value)">
-			Analyze
-		</button>
-		<button onclick="external.invoke('changeTitle:'+document.getElementById('new-title').value)">
-			Analyze
-		</button>
-		<input id="new-title" type="text" />
+		<!--<button onclick="external.invoke('open')">Open</button>-->
+		<!--<button onclick="external.invoke('save')">Save</button>-->
+		<!--<button onclick="external.invoke('changeTitle:'+document.getElementById('new-title').value)">-->
+			<!--Analyze-->
+		<!--</button>-->
+		<!--<button onclick="external.invoke('changeTitle:'+document.getElementById('new-title').value)">-->
+			<!--Analyze-->
+		<!--</button>-->
+		<!--<input id="new-title" type="text" />-->
 		<script>
+		
+		let nullData = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
+		
 			webix.ui({
   				rows:[
+  				    {
+						cols:[
+					    	{
+					    	    id: 'resulted_text',
+  				        		view: "textarea",
+  				        		height: 400,
+  				        		width:700,
+  				    		},
+  				    		{
+					    		rows:[
+					        		{
+    									view:"button", 
+    									id:"open_button", 
+    									value:"Open", 
+    									type:"form", 
+    									inputWidth:100,
+    									on:{
+    										'onItemClick': function(id){ 
+            									external.invoke('open');
+            								}
+        								}
+									},
+									{
+    									view:"button", 
+    									id:"save_button", 
+    									value:"Save", 
+    									type:"form", 
+    									inputWidth:100,
+    									on:{
+    										'onItemClick': function(id){ 
+            									external.invoke('save');
+            								}
+        								}
+									},
+					    		],
+					    	},
+						],
+					},
       				{ 
       				    view:"template", 
         				type:"header", 
@@ -42,42 +85,47 @@ func (m *WindowModel) IndexHTML() string  {
         				tip: 'Составить таблицу'
         			},
       				{ 
-      				    view:"datatable", 
+      				    autowidth: true,
+      				    view:"datatable",
+      				    value: 0, 
         				columns:[
-        					{ id:"1",    header:"А",   width:20},
-        					{ id:"2",   header:"Б",    width:20},
-        					{ id:"3",    header:"В",   width:20},
-        					{ id:"4",   header:"Г",    width:20},
-        					{ id:"5",    header:"Д",   width:20},
-        					{ id:"6",   header:"Е",    width:20},
-        					{ id:"7",    header:"Ё",   width:20},
-        					{ id:"8",   header:"Ж",    width:20},
-        					{ id:"9",    header:"З",   width:20},
-        					{ id:"10",   header:"И",   width:20},
-        					{ id:"11",    header:"Й",  width:20},
-        					{ id:"12",   header:"К",   width:20},
-        					{ id:"13",    header:"Л",  width:20},
-        					{ id:"14",   header:"М",   width:20},
-        					{ id:"15",    header:"Н",  width:20},
-        					{ id:"16",   header:"О",   width:20},
-        					{ id:"17",    header:"П",  width:20},
-        					{ id:"18",   header:"Р",   width:20},
-        					{ id:"19",    header:"С",  width:20},
-        					{ id:"20",   header:"Т",   width:20},
-        					{ id:"21",    header:"У",  width:20},
-        					{ id:"22",   header:"Ф",   width:20},
-        					{ id:"23",    header:"Х",  width:20},
-        					{ id:"24",   header:"Ц",   width:20},
-        					{ id:"25",    header:"Ч",  width:20},
-        					{ id:"26",   header:"Ш",   width:20},
-        					{ id:"27",    header:"Щ",  width:20},
-        					{ id:"28",   header:"Ъ",   width:20},
-        					{ id:"29",    header:"Ы",  width:20},
-        					{ id:"30",   header:"Ь",   width:20},
-        					{ id:"31",    header:"Э",  width:20},
-        					{ id:"32",   header:"Ю",   width:20},
-        					{ id:"33",    header:"Я",  width:20},
+        					{ id:"1",    header:"А",   width:24},
+        					{ id:"2",   header:"Б",    width:24},
+        					{ id:"3",    header:"В",   width:24},
+        					{ id:"4",   header:"Г",    width:24},
+        					{ id:"5",    header:"Д",   width:24},
+        					{ id:"6",   header:"Е",    width:24},
+        					{ id:"7",    header:"Ё",   width:24},
+        					{ id:"8",   header:"Ж",    width:24},
+        					{ id:"9",    header:"З",   width:24},
+        					{ id:"10",   header:"И",   width:24},
+        					{ id:"11",    header:"Й",  width:24},
+        					{ id:"12",   header:"К",   width:24},
+        					{ id:"13",    header:"Л",  width:24},
+        					{ id:"14",   header:"М",   width:24},
+        					{ id:"15",    header:"Н",  width:24},
+        					{ id:"16",   header:"О",   width:24},
+        					{ id:"17",    header:"П",  width:24},
+        					{ id:"18",   header:"Р",   width:24},
+        					{ id:"19",    header:"С",  width:24},
+        					{ id:"20",   header:"Т",   width:24},
+        					{ id:"21",    header:"У",  width:24},
+        					{ id:"22",   header:"Ф",   width:24},
+        					{ id:"23",    header:"Х",  width:24},
+        					{ id:"24",   header:"Ц",   width:24},
+        					{ id:"25",    header:"Ч",  width:24},
+        					{ id:"26",   header:"Ш",   width:24},
+        					{ id:"27",    header:"Щ",  width:24},
+        					{ id:"28",   header:"Ъ",   width:24},
+        					{ id:"29",    header:"Ы",  width:24},
+        					{ id:"30",   header:"Ь",   width:24},
+        					{ id:"31",    header:"Э",  width:24},
+        					{ id:"32",   header:"Ю",   width:24},
+        					{ id:"33",    header:"Я",  width:24},
     					],
+    					data: nullData,
+    					scrollX: false,
+    					scrollY: false,
       				}
   				]
 			});
@@ -87,8 +135,7 @@ func (m *WindowModel) IndexHTML() string  {
 `
 }
 
-
-func (m *WindowModel) HandleRPC(w *webview.WebView, data *string){
+func (m *WindowModel) HandleRPC(w *webview.WebView, data *string) {
 	wb := *w
 	dt := *data
 	switch {
@@ -99,7 +146,27 @@ func (m *WindowModel) HandleRPC(w *webview.WebView, data *string){
 	case dt == "unfullscreen":
 		wb.SetFullscreen(false)
 	case dt == "open":
-		log.Println("open", wb.Dialog(webview.DialogTypeOpen, 0, "Open file", ""))
+		log.Println("open") // log stamp
+		// open Dialog window
+		pathFile := wb.Dialog(webview.DialogTypeOpen, 0, "Open file", "") // absolute path to the file
+		fmt.Println(pathFile)                                             // print resultedPath
+
+		b, err := ioutil.ReadFile(pathFile) // just pass the file name
+		if err != nil {
+			fmt.Println("Catch error::Open file::Read", err)
+			return
+		}
+		openData := string(b)
+		fmt.Println(openData)
+
+		// form JS
+		jsString := `$$('resulted_text').define(value:"2");`
+		fmt.Println(jsString)
+		err = wb.Eval(jsString)
+		if err != nil {
+			fmt.Println("Catch error::Open file::OpenData", err)
+			return
+		}
 	case dt == "opendir":
 		log.Println("open", wb.Dialog(webview.DialogTypeOpen, webview.DialogFlagDirectory, "Open directory", ""))
 	case dt == "save":
