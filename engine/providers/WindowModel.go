@@ -9,8 +9,6 @@ import (
 	"strings"
 )
 
-var GlobalData string
-
 type WindowModel struct{}
 
 func NewWindowModel() *WindowModel {
@@ -95,6 +93,19 @@ func (m *WindowModel) IndexHTML() string {
             								}
         								}
 									},
+									{
+    									view:"button", 
+    									id:"clear_button", 
+    									value:"Clear", 
+    									type:"form", 
+    									inputWidth:100,
+    									on:{
+    										'onItemClick': function(id){
+            									$$('resulted_text').define({value: ""});
+            									$$('resulted_text').refresh();
+            								}
+        								}
+									},
 					    		],
 					    	},
 						],
@@ -106,7 +117,8 @@ func (m *WindowModel) IndexHTML() string {
         				tip: 'Составить таблицу'
         			},
       				{ 
-      				    autowidth: true,
+      				    id: 'datatable_part_1',
+      				    width: 800,
       				    view:"datatable",
       				    value: 0, 
         				columns:[
@@ -133,7 +145,8 @@ func (m *WindowModel) IndexHTML() string {
     					scrollY: false,
       				},
 					{ 
-      				    autowidth: true,
+					    id: 'datatable_part_2',
+      				    width: 800,
       				    view:"datatable",
       				    value: 0, 
         				columns:[
@@ -176,7 +189,19 @@ func (m *WindowModel) HandleRPC(w *webview.WebView, data *string) {
 
 	// Get changed value of text
 	case strings.HasPrefix(dt, "push_table:"):
-		fmt.Println(strings.TrimPrefix(dt, "push_table:"))
+		parsedData := (strings.TrimPrefix(dt, "push_table:"))
+		logicModel := new(MainLogic)
+		logicModel.CountCharInText(&parsedData)
+		//stringJSON := logicModel.CountCharInText(&parsedData)
+		//
+		//jsString := `
+		//	$$('datatable_part_1'').define({data: ` + stringJSON + ` });
+		//	$$('datatable_part_2').define({data: ` + stringJSON + ` });`
+		//
+		//err := wb.Eval(jsString)
+		//if err != nil {
+		//	fmt.Println("Error while executing JS::Push_table::", err)
+		//}
 
 	// Open file
 	case dt == "open":

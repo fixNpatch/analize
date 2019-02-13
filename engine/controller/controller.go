@@ -10,6 +10,7 @@ import (
 
 type EngineController struct {
 	model *providers.WindowModel
+	logic *providers.MainLogic
 }
 
 func (c *EngineController) Init() *EngineController {

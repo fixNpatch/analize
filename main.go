@@ -14,14 +14,12 @@ const (
 var GlobalData string
 
 type app struct {
-	logic  *controller.MainLogic
 	engine *controller.EngineController
 }
 
 func main() {
 	app := app{}
 	app.engine = new(controller.EngineController)
-	app.logic = new(controller.MainLogic)
 	url, err := app.engine.StartServer()
 	if err != nil {
 		fmt.Println("Error while starting server::", err)
