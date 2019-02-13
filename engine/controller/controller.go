@@ -17,10 +17,11 @@ func (c *EngineController) Init() *EngineController {
 	return nil
 }
 
-func (c *EngineController) StartServer() string {
+func (c *EngineController) StartServer() (url string, err error) {
 	ln, err := net.Listen("tcp", "127.0.0.1:8080")
 	if err != nil {
 		log.Fatal(err)
+		return "", err
 	}
 
 	go func() {
@@ -30,11 +31,11 @@ func (c *EngineController) StartServer() string {
 		})
 		log.Fatal(http.Serve(ln, nil))
 	}()
-	return "http://" + ln.Addr().String()
+	url = "http://" + ln.Addr().String()
+	return url, nil
 }
 
-func (c *EngineController) HandleRPC(w webview.WebView, data string){
+func (c *EngineController) HandleRPC(w webview.WebView, data string) {
 	c.model.HandleRPC(&w, &data)
 	return
 }
-
