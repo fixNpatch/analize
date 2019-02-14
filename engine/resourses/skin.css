@@ -1,0 +1,37 @@
+.webix_spacer, .webix_layout_line{
+  background: #e6e6e6;
+}
+
+.webix_img_btn {
+  background: #bfbfbf;
+  border-radius: 10%;
+}
+.webix_el_button > .webix_el_box {
+  border-radius: 500px;
+}
+
+.webix_icon_btn {
+  margin-right: 15px;
+}
+
+
+  /*`````````````````````````````````````````````*/
+ /*``````````` STYLE FOR DATATABLE `````````````*/
+/*`````````````````````````````````````````````*/
+
+.datatable_style .webix_hcell{ /*HEADER*/
+  text-align: center;
+  font-weight:bold;
+}
+.datatable_style .webix_column{
+  text-align: center;
+  font-style:italic;
+  background: #f0faff;
+}
+/*.datatable_style .webix_column > div{*/
+  /*border-color: #9f222b;*/
+/*}*/
+
+.datatable_style .dark {
+  background: #e6f7ff;
+}
