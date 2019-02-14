@@ -9,6 +9,8 @@ import (
 	"strings"
 )
 
+var LocalStorage string
+
 type WindowModel struct{}
 
 func NewWindowModel() *WindowModel {
@@ -52,27 +54,53 @@ func (m *WindowModel) HandleRPC(w *webview.WebView, data *string) {
 
 	// Get changed value of text
 	case strings.HasPrefix(dt, "push_table:"):
-		parsedData := (strings.TrimPrefix(dt, "push_table:"))
 		logicModel := new(MainLogic)
-		stringJSON := logicModel.CountCharInText(&parsedData)
-		fmt.Println(stringJSON)
 
-		jsString := `
-			// let data = [{"Б":2}];
-			// let dt = $$('datatable_id');
-			// dt.parse(data)
+		fmt.Println(dt)
 
+		paramPlusData := strings.TrimPrefix(dt, "push_table:")
+		var parsedData, stringJSON, jsString string
+
+		switch string(paramPlusData[0]) {
+		case "e":
+			parsedData = strings.TrimPrefix(paramPlusData, "englishTable:")
+			stringJSON = logicModel.CountCharInText(&parsedData)
+			jsString = `
 			let data = ` + stringJSON + `;
 
-			$$('datatable_part_1').clearAll();
-			$$('datatable_part_2').clearAll();
-			$$('datatable_part_3').clearAll();
+			$$('en_datatable_part_1').clearAll();
+			$$('en_datatable_part_2').clearAll();
+			$$('en_datatable_part_3').clearAll();
 
-			$$('datatable_part_1').parse(data);
-			$$('datatable_part_2').parse(data);
-			$$('datatable_part_3').parse(data);
+			$$('en_datatable_part_1').parse(data);
+			$$('en_datatable_part_2').parse(data);
+			$$('en_datatable_part_3').parse(data);
 
 		`
+			break
+		case "r":
+			parsedData = strings.TrimPrefix(paramPlusData, "russianTable:")
+			stringJSON = logicModel.CountRuneInText(&parsedData)
+			jsString = `
+			let data = ` + stringJSON + `;
+
+			$$('ru_datatable_part_1').clearAll();
+			$$('ru_datatable_part_2').clearAll();
+			$$('ru_datatable_part_3').clearAll();
+
+			$$('ru_datatable_part_1').parse(data);
+			$$('ru_datatable_part_2').parse(data);
+			$$('ru_datatable_part_3').parse(data);
+
+		`
+			break
+		default:
+			fmt.Println("BAD PARAM CAUGHT::EXIT")
+			break
+		}
+
+		// save latest result to Storage
+		LocalStorage = stringJSON
 
 		err := wb.Eval(jsString)
 		if err != nil {
@@ -97,8 +125,33 @@ func (m *WindowModel) HandleRPC(w *webview.WebView, data *string) {
 		jsString := `$$('resulted_text').setValue(` + strconv.Quote(string(b)) + `);`
 		err = wb.Eval(jsString)
 		if err != nil {
-			fmt.Println("Catch error::Open file::OpenData", err)
+			log.Println("Catch error::Open file::OpenData", err)
+			return
+		}
+
+	case dt == "save":
+		log.Println("save") // log stamp
+		// open Dialog window
+		pathFile := wb.Dialog(webview.DialogTypeSave, webview.DialogFlagFile, "Save file", "") // absolute path to the file
+		fmt.Println(pathFile)
+		err := m.saveFile(pathFile)
+		if err != nil {
+			log.Println("Catch error::Writing file::", err)
 			return
 		}
 	}
+}
+
+func (m *WindowModel) saveFile(pathFile string) (err error) {
+
+	data := []byte(LocalStorage)
+
+	// write the whole body at once
+	err = ioutil.WriteFile(pathFile, data, 0644)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("All good, there're no pointer's error")
+	return nil
 }

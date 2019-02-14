@@ -28,7 +28,7 @@ func main() {
 	w := webview.New(webview.Settings{
 		Width:                  windowWidth,
 		Height:                 windowHeight,
-		Title:                  "Simple window demo",
+		Title:                  "Perv",
 		Resizable:              false,
 		URL:                    url,
 		ExternalInvokeCallback: app.engine.HandleRPC,
