@@ -3,6 +3,7 @@ package providers
 import (
 	"encoding/json"
 	"fmt"
+	"sort"
 	"strings"
 )
 
@@ -11,6 +12,11 @@ const ALPHABET_EN = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 const ALPHABET_DE = "AÄBCDEFGHIJKLMNOÖPQRSẞTUÜVWXYZ"
 
 type MainLogic struct{}
+
+type kvSupport struct { // structure to sort arrray
+	Key   string
+	Value string
+}
 
 func (ml *MainLogic) CountCharInText(data *string) (result string) {
 	var Data string
@@ -42,9 +48,10 @@ func (ml *MainLogic) CountCharInText(data *string) (result string) {
 			continue
 		}
 		fmt.Println(i, alphabet[i], "/", charCounter, " == ", float64(alphabet[i])/float64(charCounter))
-		resultData[i] = fmt.Sprintf("%.5f", float64(alphabet[i])/float64(charCounter))
-
+		resultData[i] = fmt.Sprintf("%.4f", float64(alphabet[i])/float64(charCounter))
 	}
+
+	resultData = ml.sortSlice(resultData)
 
 	// format resultData to JSON
 	jsonString, err := json.Marshal(resultData)
@@ -85,7 +92,7 @@ func (ml *MainLogic) CountRuneInText(data *string) (result string) {
 			continue
 		}
 		fmt.Println(i, alphabet[i], "/", charCounter, " == ", float64(alphabet[i])/float64(charCounter))
-		resultData[i] = fmt.Sprintf("%.5f", float64(alphabet[i])/float64(charCounter))
+		resultData[i] = fmt.Sprintf("%.4f", float64(alphabet[i])/float64(charCounter))
 
 	}
 
@@ -96,4 +103,22 @@ func (ml *MainLogic) CountRuneInText(data *string) (result string) {
 		return
 	}
 	return string(jsonString)
+}
+
+func (ml *MainLogic) sortSlice(data map[string]string) map[string]string {
+	var supportSlice []kvSupport
+	resultData := map[string]string{}
+	for k, v := range data {
+		supportSlice = append(supportSlice, kvSupport{k, v})
+	}
+
+	sort.Slice(supportSlice, func(i, j int) bool {
+		return supportSlice[i].Value > supportSlice[j].Value
+	})
+
+	for _, kv := range supportSlice {
+		fmt.Printf("%s, %s\n", kv.Key, kv.Value) // for testing. delete to production
+		resultData[string(kv.Key)] = string(kv.Value)
+	}
+	return resultData
 }

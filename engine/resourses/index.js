@@ -121,8 +121,45 @@ function run() {
 
         ],
     });
+
+    createCell(null, "rus")
+
 }
 
+// let Cell  = {
+//     id:"",
+//     header: "",
+//     width: 0,
+//     css: ""
+// };
+
+function createCell(data, param) {
+    let tablestack = {
+        table1: null,
+        table2: null,
+        table3: null
+    };
+    switch (param) {
+        case "rus":{
+            tablestack.table1 = $$('ru_datatable_part1');
+            tablestack.table2 = $$('ru_datatable_part2');
+            tablestack.table3 = $$('ru_datatable_part3');
+            break;
+        }
+        case "eng":{
+            tablestack.table1 = $$('en_datatable_part1');
+            tablestack.table2 = $$('en_datatable_part2');
+            tablestack.table3 = $$('en_datatable_part3');
+            break;
+        }
+        default:{
+            webix.message("createCell::default switch");
+            break;
+        }
+    }
+
+    for(let i in data){}
+}
 
 function russianTable(nullData){
     return {
