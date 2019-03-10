@@ -2,6 +2,8 @@ function run() {
     const nullDataRU = [{"Ё":0,"А":0,"Б":0,"В":0,"Г":0,"Д":0,"Е":0,"Ж":0,"З":0,"И":0,"Й":0,"К":0,"Л":0,"М":0,"Н":0,"О":0,"П":0,"Р":0,"С":0,"Т":0,"У":0,"Ф":0,"Х":0,"Ц":0,"Ч":0,"Ш":0,"Щ":0,"Ъ":0,"Ы":0,"Ь":0,"Э":0,"Ю":0,"Я":0}];
     const nullDataEN = [{"A":0,"B":0,"C":0,"D":0,"E":0,"F":0,"G":0,"H":0,"I":0,"J":0,"K":0,"L":0,"M":0,"N":0,"O":0,"P":0,"Q":0,"R":0,"S":0,"T":0,"U":0,"V":0,"W":0,"X":0,"Y":0,"Z":0}];
 
+    const nul = [];
+
     webix.ui({
         rows:[
             {/**spacer**/height:10},
@@ -74,6 +76,22 @@ function run() {
                                     'onItemClick': function(id){
                                         $$('resulted_text').define({value: ""});
                                         $$('resulted_text').refresh();
+
+
+                                        let dpart_1 = $$('ru_datatable_part_1'),
+                                            dpart_2 = $$('ru_datatable_part_2'),
+                                            dpart_3 = $$('ru_datatable_part_3');
+
+                                        dpart_1.config.columns = combineHeaders(["А","Б","В","Г","Д","Е","Ё","Ж","З","И","Й"]);
+                                        dpart_1.refreshColumns();
+
+                                        dpart_2.config.columns = combineHeaders(["К","Л","М","Н","О","П","Р","С","Т","У","Ф"]);
+                                        dpart_2.refreshColumns();
+
+                                        dpart_3.config.columns = combineHeaders(["Х","Ц","Ч","Ш","Щ","Ъ","Ы","Ь","Э","Ю","Я"]);
+                                        dpart_3.refreshColumns();
+
+
                                     }
                                 }
                             },
@@ -121,45 +139,20 @@ function run() {
 
         ],
     });
-
-    createCell(null, "rus")
-
 }
 
-// let Cell  = {
-//     id:"",
-//     header: "",
-//     width: 0,
-//     css: ""
-// };
-
-function createCell(data, param) {
-    let tablestack = {
-        table1: null,
-        table2: null,
-        table3: null
-    };
-    switch (param) {
-        case "rus":{
-            tablestack.table1 = $$('ru_datatable_part1');
-            tablestack.table2 = $$('ru_datatable_part2');
-            tablestack.table3 = $$('ru_datatable_part3');
-            break;
-        }
-        case "eng":{
-            tablestack.table1 = $$('en_datatable_part1');
-            tablestack.table2 = $$('en_datatable_part2');
-            tablestack.table3 = $$('en_datatable_part3');
-            break;
-        }
-        default:{
-            webix.message("createCell::default switch");
-            break;
-        }
+function combineHeaders(data) {
+    let columns_header_part = [];
+    for(let i in data) {
+        columns_header_part.push({
+            id: data[i],
+            header: data[i],
+            width:70
+        })
     }
-
-    for(let i in data){}
+    return columns_header_part
 }
+
 
 function russianTable(nullData){
     return {
