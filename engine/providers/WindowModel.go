@@ -79,12 +79,12 @@ func (m *WindowModel) HandleRPC(w *webview.WebView, data *string) {
 		fmt.Println(dt)
 
 		paramPlusData := strings.TrimPrefix(dt, "push_table:")
-		var parsedData, stringJSON, jsString string
+		var parsedData, jsString string
 
 		switch string(paramPlusData[0]) {
 		case "e":
 			parsedData = strings.TrimPrefix(paramPlusData, "englishTable:")
-			stringJSON, headerOrder := logicModel.CountRuneInText(&parsedData, "english")
+			stringJSON, headerOrder, rawData := logicModel.CountRuneInText(&parsedData, "english")
 			fmt.Println("ResultData::", string(stringJSON))
 			var firstPart, secondPart, thirdPart []interface{}
 
@@ -121,6 +121,8 @@ func (m *WindowModel) HandleRPC(w *webview.WebView, data *string) {
 			fmt.Println(string(firstPartMarshaled))
 			fmt.Println(string(secondPartMarshaled))
 			fmt.Println(string(thirdPartMarshaled))
+
+			LocalStorage, err = m.saveToStorage(headerOrder, rawData)
 
 			jsString = `
 			let firstPart = ` + string(firstPartMarshaled) + `;
@@ -194,7 +196,7 @@ func (m *WindowModel) HandleRPC(w *webview.WebView, data *string) {
 			break
 		case "r":
 			parsedData = strings.TrimPrefix(paramPlusData, "russianTable:")
-			stringJSON, headerOrder := logicModel.CountRuneInText(&parsedData, "russian")
+			stringJSON, headerOrder, rawData := logicModel.CountRuneInText(&parsedData, "russian")
 			fmt.Println("ResultData::", string(stringJSON))
 			var firstPart, secondPart, thirdPart []interface{}
 
@@ -231,6 +233,8 @@ func (m *WindowModel) HandleRPC(w *webview.WebView, data *string) {
 			fmt.Println(string(firstPartMarshaled))
 			fmt.Println(string(secondPartMarshaled))
 			fmt.Println(string(thirdPartMarshaled))
+
+			LocalStorage, err = m.saveToStorage(headerOrder, rawData)
 
 			jsString = `
 			let firstPart = ` + string(firstPartMarshaled) + `;
@@ -309,7 +313,7 @@ func (m *WindowModel) HandleRPC(w *webview.WebView, data *string) {
 		}
 
 		// save latest result to Storage
-		LocalStorage = stringJSON
+		fmt.Println("locstor::", LocalStorage)
 
 		err := wb.Eval(jsString)
 		if err != nil {
@@ -363,4 +367,18 @@ func (m *WindowModel) saveFile(pathFile string) (err error) {
 
 	fmt.Println("All good, there're no pointer's error")
 	return nil
+}
+
+func (m *WindowModel) saveToStorage(order []interface{}, data map[string]string) (result string, err error) {
+	for i := range order {
+		value := "0"
+		for j := range data {
+			if order[i].(string) == j {
+				value = data[j]
+			}
+		}
+		result += order[i].(string) + ":" + value + "   "
+	}
+
+	return
 }

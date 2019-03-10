@@ -22,7 +22,7 @@ type OrderedMap struct {
 	Map   map[string]string
 }
 
-func (ml *MainLogic) CountRuneInText(data *string, param string) (result string, headerOrder []interface{}) {
+func (ml *MainLogic) CountRuneInText(data *string, param string) (result string, headerOrder []interface{}, rawData map[string]string) {
 	var alphabetConst string
 	switch param {
 	case "english":
@@ -86,7 +86,7 @@ func (ml *MainLogic) CountRuneInText(data *string, param string) (result string,
 		return
 	}
 
-	return string(jsonString), order
+	return string(jsonString), order, resultData
 }
 
 func (ml MainLogic) getOrder(data map[string]string) (order []interface{}) {
