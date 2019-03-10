@@ -84,28 +84,8 @@ func (m *WindowModel) HandleRPC(w *webview.WebView, data *string) {
 		switch string(paramPlusData[0]) {
 		case "e":
 			parsedData = strings.TrimPrefix(paramPlusData, "englishTable:")
-			stringJSON = logicModel.CountCharInText(&parsedData)
-			fmt.Println("E::stringJSON::", string(stringJSON))
-			jsString = `
-			let data = ` + stringJSON + `;
-
-			$$('en_datatable_part_1').clearAll();
-			$$('en_datatable_part_2').clearAll();
-			$$('en_datatable_part_3').clearAll();
-
-			$$('en_datatable_part_1').parse(data);
-			$$('en_datatable_part_2').parse(data);
-			$$('en_datatable_part_3').parse(data);
-
-			//createCell(` + stringJSON + `, "rus");
-
-		`
-			break
-		case "r":
-			parsedData = strings.TrimPrefix(paramPlusData, "russianTable:")
-			stringJSON, headerOrder := logicModel.CountRuneInText(&parsedData)
-			fmt.Println("R::stringJSON::", string(stringJSON))
-
+			stringJSON, headerOrder := logicModel.CountRuneInText(&parsedData, "english")
+			fmt.Println("ResultData::", string(stringJSON))
 			var firstPart, secondPart, thirdPart []interface{}
 
 			for i := 0; i < len(headerOrder); i++ {
@@ -120,7 +100,115 @@ func (m *WindowModel) HandleRPC(w *webview.WebView, data *string) {
 				}
 			}
 
-			fmt.Println("R::headerJSON::", headerOrder)
+			firstPartMarshaled, err := json.Marshal(firstPart)
+			if err != nil {
+				fmt.Println("Something wrong with converting to JSON::Part 1::", err)
+				return
+			}
+
+			secondPartMarshaled, err := json.Marshal(secondPart)
+			if err != nil {
+				fmt.Println("Something wrong with converting to JSON::Part 2::", err)
+				return
+			}
+
+			thirdPartMarshaled, err := json.Marshal(thirdPart)
+			if err != nil {
+				fmt.Println("Something wrong with converting to JSON::Part 3::", err)
+				return
+			}
+
+			fmt.Println(string(firstPartMarshaled))
+			fmt.Println(string(secondPartMarshaled))
+			fmt.Println(string(thirdPartMarshaled))
+
+			jsString = `
+			let firstPart = ` + string(firstPartMarshaled) + `;
+			let secondPart = ` + string(secondPartMarshaled) + `;
+			let thirdPart = ` + string(thirdPartMarshaled) + `;
+		
+
+			let depart_1 = $$('en_datatable_part_1'),
+				depart_2 = $$('en_datatable_part_2'),
+				depart_3 = $$('en_datatable_part_3');
+
+			let columns_header_part_1e = [];
+			for(let i in firstPart) {
+				columns_header_part_1e.push({
+					id: firstPart[i],
+					header: firstPart[i],
+					width:70
+				})
+				
+			}
+
+			let columns_header_part_2e = [];
+			for(let i in secondPart) {
+				columns_header_part_2e.push({
+					id: secondPart[i],
+					header: secondPart[i],
+					width:70
+				})
+			}
+
+			let columns_header_part_3e = [];
+			for(let i in thirdPart) {
+				columns_header_part_3e.push({
+					id: thirdPart[i],
+					header: thirdPart[i],
+					width:70
+				})
+			}
+
+			depart_1.config.columns = [];
+			depart_1.refreshColumns();
+
+			depart_2.config.columns = [];
+			depart_2.refreshColumns();
+
+			depart_3.config.columns = [];
+			depart_3.refreshColumns();
+
+
+			depart_1.config.columns = columns_header_part_1e;
+			depart_1.refreshColumns();
+
+			depart_2.config.columns = columns_header_part_2e;
+			depart_2.refreshColumns();
+
+			depart_3.config.columns = columns_header_part_3e;
+			depart_3.refreshColumns();
+
+
+
+			let data = ` + stringJSON + `;
+
+			depart_1.clearAll();
+			depart_2.clearAll();
+			depart_3.clearAll();
+
+			depart_1.parse(data);
+			depart_2.parse(data);
+			depart_3.parse(data);
+		`
+			break
+		case "r":
+			parsedData = strings.TrimPrefix(paramPlusData, "russianTable:")
+			stringJSON, headerOrder := logicModel.CountRuneInText(&parsedData, "russian")
+			fmt.Println("ResultData::", string(stringJSON))
+			var firstPart, secondPart, thirdPart []interface{}
+
+			for i := 0; i < len(headerOrder); i++ {
+				if i < 22 {
+					if i > 10 {
+						secondPart = append(secondPart, headerOrder[i])
+					} else {
+						firstPart = append(firstPart, headerOrder[i])
+					}
+				} else {
+					thirdPart = append(thirdPart, headerOrder[i])
+				}
+			}
 
 			firstPartMarshaled, err := json.Marshal(firstPart)
 			if err != nil {
@@ -165,7 +253,7 @@ func (m *WindowModel) HandleRPC(w *webview.WebView, data *string) {
 			}
 
 			let columns_header_part_2 = [];
-			for(let i in firstPart) {
+			for(let i in secondPart) {
 				columns_header_part_2.push({
 					id: secondPart[i],
 					header: secondPart[i],
@@ -174,7 +262,7 @@ func (m *WindowModel) HandleRPC(w *webview.WebView, data *string) {
 			}
 
 			let columns_header_part_3 = [];
-			for(let i in firstPart) {
+			for(let i in thirdPart) {
 				columns_header_part_3.push({
 					id: thirdPart[i],
 					header: thirdPart[i],

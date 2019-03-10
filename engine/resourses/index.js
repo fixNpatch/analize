@@ -80,7 +80,11 @@ function run() {
 
                                         let dpart_1 = $$('ru_datatable_part_1'),
                                             dpart_2 = $$('ru_datatable_part_2'),
-                                            dpart_3 = $$('ru_datatable_part_3');
+                                            dpart_3 = $$('ru_datatable_part_3'),
+                                            depart_1 = $$('en_datatable_part_1'),
+                                            depart_2 = $$('en_datatable_part_2'),
+                                            depart_3 = $$('en_datatable_part_3');
+
 
                                         dpart_1.config.columns = combineHeaders(["А","Б","В","Г","Д","Е","Ё","Ж","З","И","Й"]);
                                         dpart_1.refreshColumns();
@@ -92,6 +96,19 @@ function run() {
                                         dpart_3.refreshColumns();
 
 
+                                        dpart_1.clearAll();
+                                        dpart_2.clearAll();
+                                        dpart_3.clearAll();
+                                        dpart_1.parse(nullDataRU);
+                                        dpart_2.parse(nullDataRU);
+                                        dpart_3.parse(nullDataRU);
+
+                                        depart_1.clearAll();
+                                        depart_2.clearAll();
+                                        depart_3.clearAll();
+                                        depart_1.parse(nullDataEN);
+                                        depart_2.parse(nullDataEN);
+                                        depart_3.parse(nullDataEN);
                                     }
                                 }
                             },
